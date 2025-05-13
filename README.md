@@ -1,1 +1,260 @@
-# 411262219
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邀請函</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .emoji {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 40px;
+            position: relative;
+        }
+
+        .emoji svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between; /* 這樣可以讓按鈕分開 */
+            width: 100%; /* 設定為 100% 使按鈕能夠自適應容器 */
+            padding: 0 50px; /* 增加左右的 padding 以便按鈕不會貼邊 */
+            align-items: center;
+            margin-top: 50px;
+            position: relative;
+            min-height: 60px;
+        }
+
+        button {
+            padding: 15px 40px;
+            font-size: 18px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        #acceptBtn {
+            background-color: #4CAF50;
+            color: white;
+            position: relative;
+        }
+
+        #acceptBtn:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+
+        #rejectBtn {
+            background-color: #f44336;
+            color: white;
+            position: absolute;
+            transition: all 0.1s ease;
+        }
+
+        .message {
+            margin-top: 40px;
+            font-size: 20px;
+            color: #4CAF50;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>嚴厲奇怪向你發送了一封打瓦邀請函</h1>
+        <p>打瓦不？</p>
+        
+        <div class="emoji" id="emojiContainer">
+            <!-- 中性表情 -->
+            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="100" cy="100" r="90" fill="#F5D76E"/>
+                <circle cx="75" cy="85" r="8" fill="#333"/>
+                <circle cx="125" cy="85" r="8" fill="#333"/>
+                <path d="M 70 130 Q 100 140 130 130" stroke="#333" stroke-width="3" fill="none"/>
+                <ellipse cx="60" cy="110" rx="15" ry="10" fill="#FFB6C1" opacity="0.5"/>
+                <ellipse cx="140" cy="110" rx="15" ry="10" fill="#FFB6C1" opacity="0.5"/>
+            </svg>
+        </div>
+        
+        <div class="buttons">
+            <button id="acceptBtn">接受</button>
+            <button id="rejectBtn">拒絕</button>
+        </div>
+        
+        <div class="message" id="successMessage">
+            太好了！來打瓦🎉
+        </div>
+    </div>
+
+    <script>
+        const emojiContainer = document.getElementById('emojiContainer');
+        const acceptBtn = document.getElementById('acceptBtn');
+        const rejectBtn = document.getElementById('rejectBtn');
+        const successMessage = document.getElementById('successMessage');
+        let isRunning = false;
+
+        // 開心表情的SVG
+        const happyFace = `  
+            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="100" cy="100" r="90" fill="#F5D76E"/>
+                <circle cx="70" cy="80" r="15" fill="#fff"/>
+                <circle cx="130" cy="80" r="15" fill="#fff"/>
+                <circle cx="70" cy="80" r="8" fill="#333"/>
+                <circle cx="130" cy="80" r="8" fill="#333"/>
+                <path d="M 60 120 Q 100 150 140 120" stroke="#E74C3C" stroke-width="5" fill="#E74C3C"/>
+                <rect x="95" y="120" width="10" height="10" fill="#fff"/>
+                <ellipse cx="60" cy="110" rx="20" ry="15" fill="#FFB6C1"/>
+                <ellipse cx="140" cy="110" rx="20" ry="15" fill="#FFB6C1"/>
+            </svg>
+        `;
+
+        // 尷尬/難過表情的SVG
+        const sadFace = `
+            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="100" cy="100" r="90" fill="#F5D76E"/>
+                <circle cx="75" cy="85" r="8" fill="#333"/>
+                <circle cx="125" cy="85" r="8" fill="#333"/>
+                <path d="M 70 140 Q 100 130 130 140" stroke="#333" stroke-width="3" fill="none"/>
+                <ellipse cx="60" cy="110" rx="15" ry="10" fill="#FFB6C1" opacity="0.5"/>
+                <ellipse cx="140" cy="110" rx="15" ry="10" fill="#FFB6C1" opacity="0.5"/>
+                <!-- 汗滴 -->
+                <path d="M 150 70 Q 145 60 150 50" fill="#6BBCDB" stroke="none"/>
+                <circle cx="150" cy="70" r="5" fill="#6BBCDB"/>
+            </svg>
+        `;
+
+        // 中性表情的SVG
+        const neutralFace = `
+            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="100" cy="100" r="90" fill="#F5D76E"/>
+                <circle cx="75" cy="85" r="8" fill="#333"/>
+                <circle cx="125" cy="85" r="8" fill="#333"/>
+                <path d="M 70 130 Q 100 140 130 130" stroke="#333" stroke-width="3" fill="none"/>
+                <ellipse cx="60" cy="110" rx="15" ry="10" fill="#FFB6C1" opacity="0.5"/>
+                <ellipse cx="140" cy="110" rx="15" ry="10" fill="#FFB6C1" opacity="0.5"/>
+            </svg>
+        `;
+
+        // 監聽滑鼠移動
+        document.addEventListener('mousemove', (e) => {
+            const rect = acceptBtn.getBoundingClientRect();
+            const rejectRect = rejectBtn.getBoundingClientRect();
+            
+            // 計算滑鼠與按鈕的距離
+            const distanceToAccept = Math.sqrt(
+                Math.pow(e.clientX - (rect.left + rect.width/2), 2) + 
+                Math.pow(e.clientY - (rect.top + rect.height/2), 2)
+            );
+            
+            const distanceToReject = Math.sqrt(
+                Math.pow(e.clientX - (rejectRect.left + rejectRect.width/2), 2) + 
+                Math.pow(e.clientY - (rejectRect.top + rejectRect.height/2), 2)
+            );
+            
+            // 根據距離改變表情
+            if (distanceToAccept < 150) {
+                emojiContainer.innerHTML = happyFace;
+            } else if (distanceToReject < 100) {
+                emojiContainer.innerHTML = sadFace;
+                // 當滑鼠靠近拒絕按鈕時，讓它逃跑
+                runAwayFromMouse(e);
+            } else {
+                emojiContainer.innerHTML = neutralFace;
+            }
+        });
+
+        // 拒絕按鈕逃跑功能
+        function runAwayFromMouse(e) {
+            if (isRunning) return;
+            
+            const rejectRect = rejectBtn.getBoundingClientRect();
+            const mouseX = e.clientX;
+            const mouseY = e.clientY;
+            
+            // 計算按鈕中心點
+            const btnCenterX = rejectRect.left + rejectRect.width / 2;
+            const btnCenterY = rejectRect.top + rejectRect.height / 2;
+            
+            // 計算滑鼠與按鈕的距離
+            const distance = Math.sqrt(
+                Math.pow(mouseX - btnCenterX, 2) + 
+                Math.pow(mouseY - btnCenterY, 2)
+            );
+            
+            // 如果滑鼠太近，讓按鈕逃跑
+            if (distance < 100) {
+                isRunning = true;
+                
+                // 計算逃跑方向（與滑鼠相反的方向）
+                const angle = Math.atan2(btnCenterY - mouseY, btnCenterX - mouseX);
+                
+                // 隨機逃跑距離
+                const runDistance = 200 + Math.random() * 100;
+                
+                // 計算新位置
+                let newX = Math.cos(angle) * runDistance;
+                let newY = Math.sin(angle) * runDistance;
+                
+                // 確保按鈕不會跑出螢幕
+                const windowWidth = window.innerWidth;
+                const windowHeight = window.innerHeight;
+                const currentLeft = rejectRect.left + newX;
+                const currentTop = rejectRect.top + newY;
+                
+                if (currentLeft < 0) newX = -rejectRect.left + 20;
+                if (currentLeft + rejectRect.width > windowWidth) newX = windowWidth - rejectRect.left - rejectRect.width - 20;
+                if (currentTop < 0) newY = -rejectRect.top + 20;
+                if (currentTop + rejectRect.height > windowHeight) newY = windowHeight - rejectRect.top - rejectRect.height - 20;
+                
+                // 應用新位置
+                rejectBtn.style.transform = `translate(${newX}px, ${newY}px)`;
+                
+                setTimeout(() => {
+                    isRunning = false;
+                }, 100);
+            }
+        }
+
+        // 點擊接受按鈕
+        acceptBtn.addEventListener('click', () => {
+            emojiContainer.innerHTML = happyFace;
+            acceptBtn.style.display = 'none';
+            rejectBtn.style.display = 'none';
+            successMessage.style.display = 'block';
+        });
+
+        // 嘗試點擊拒絕按鈕
